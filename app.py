@@ -4,11 +4,16 @@ from application.exporter import exporter
 from application.writer import writer
 
 
-@schedule.repeat(schedule.every().day.at('17:09'))
+@schedule.repeat(schedule.every().day.at('19:28'))
 def get_metrics_day():
     exporter(0, 'day')
     exporter(2, 'day')
     exporter(3, 'day')
+
+
+@schedule.repeat(schedule.every().day.at('19:59'))
+def get_metrics_day():
+    writer(0, 'day')
 
 
 @schedule.repeat(schedule.every().day.at('16:40'))
