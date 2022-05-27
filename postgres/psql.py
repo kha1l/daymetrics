@@ -1,5 +1,6 @@
 import psycopg2
 from config.conf import Config
+from datetime import timedelta, date
 
 
 class Database:
@@ -36,6 +37,47 @@ class Database:
         return self.execute(sql, parameters=parameters, fetchone=True)
 
     def get_users(self, group: int):
-        sql = 'SELECT name_rest FROM settingsrest WHERE group_index=%s order by rest_id;'
+        sql = 'SELECT name_rest, rest_id FROM settingsrest WHERE group_index=%s order by rest_id;'
         parameters = (group,)
         return self.execute(sql, parameters=parameters, fetchall=True)
+
+    def get_line(self, dt: str, rest_id: int):
+        sql = 'SELECT date, rest_id FROM daymetrics WHERE date=%s and rest_id=%s'
+        parameters = dt, rest_id
+        return self.execute(sql, parameters=parameters, fetchall=True)
+
+    def add_metrics(self, dt: date, rest_id: int, name_rest: str, revenue: int, revenue_rest: int,
+                    productivity: int, orders_per_hour: float, product: float, time_in_rest: timedelta,
+                    time_in_delivery: timedelta, time_in_shelf: timedelta, delivery_time: timedelta,
+                    stop_selling: timedelta, cause_of_stops: str, certificates: int, prepare: float, scrap: float):
+        sql = '''
+            INSERT INTO daymetrics (
+                date, rest_id, name_rest, revenue,
+                revenue_rest, productivity, orders_per_hour,
+                product, time_in_rest, time_in_delivery,
+                time_in_shelf, delivery_time, stop_selling, cause_of_stops,
+                certificates, prepare, scrap) VALUES (
+                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                )
+            )
+        '''
+        parameters = (dt, rest_id, name_rest, revenue, revenue_rest, productivity, orders_per_hour, product,
+                      time_in_rest, time_in_delivery, time_in_shelf, delivery_time, stop_selling, cause_of_stops,
+                      certificates, prepare, scrap)
+        self.execute(sql, parameters=parameters, commit=True)
+
+    def update_metrics(self, dt: date, rest_id: int, name_rest: str, revenue: int, revenue_rest: int,
+                       productivity: int, orders_per_hour: float, product: float, time_in_rest: timedelta,
+                       time_in_delivery: timedelta, time_in_shelf: timedelta, delivery_time: timedelta,
+                       stop_selling: timedelta, cause_of_stops: str, certificates: int, prepare: float, scrap: float):
+        sql = '''
+            UPDATE daymetrics SET date=%s, rest_id=%s, name_rest=%s, revenue=%s,
+                revenue_rest=%s, productivity=%s, orders_per_hour=%s,
+                product=%s, time_in_rest=%s, time_in_delivery=%s,
+                time_in_shelf=%s, delivery_time=%s, stop_selling=%s, cause_of_stops=%s,
+                certificates=%s, prepare=%s, scrap=%s WHERE date=%s AND rest_id=%s
+        '''
+        parameters = (dt, rest_id, name_rest, revenue, revenue_rest, productivity, orders_per_hour, product,
+                      time_in_rest, time_in_delivery, time_in_shelf, delivery_time, stop_selling, cause_of_stops,
+                      certificates, prepare, scrap, dt, rest_id)
+        self.execute(sql, parameters=parameters, commit=True)

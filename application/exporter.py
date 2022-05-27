@@ -18,4 +18,4 @@ def exporter(group: int, tps: str):
         data.handover_stationary(tps)
         data.prepare(tps)
         data.scrap(tps)
-        time.sleep(10)
+        time.sleep(30)

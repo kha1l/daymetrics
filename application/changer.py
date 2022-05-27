@@ -60,7 +60,7 @@ class Changer:
             print('Выручка ресторана - key')
             revenue_rest = 0
 
-        return revenue, revenue_rest
+        return int(revenue), int(revenue_rest)
 
     def change_productivity(self):
         df = self.obj.df_prod
@@ -92,7 +92,7 @@ class Changer:
             print('Продуктов на человека в час - key')
             product_on_hour = 0
 
-        return productivity, product_on_hour, order_per_hour
+        return int(productivity), float(product_on_hour), float(order_per_hour)
 
     def change_prepare(self):
         df = self.obj.df_prepare
@@ -164,7 +164,7 @@ class Changer:
             print('Количество просроченных заказов - key')
             cert = 0
 
-        return avg_del, cert
+        return avg_del, int(cert)
 
     def change_handover_delivery(self):
         df = self.obj.df_hand_del
