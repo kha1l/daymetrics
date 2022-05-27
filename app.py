@@ -1,7 +1,7 @@
 import time
 import schedule
 from application.exporter import exporter
-from application.writer import writer
+from worker import work
 
 
 @schedule.repeat(schedule.every().day.at('19:28'))
@@ -11,16 +11,9 @@ def get_metrics_day():
     exporter(3, 'day')
 
 
-@schedule.repeat(schedule.every().day.at('19:59'))
+@schedule.repeat(schedule.every().day.at('13:08'))
 def get_metrics_day():
-    writer(0, 'day')
-
-
-@schedule.repeat(schedule.every().day.at('16:40'))
-def write_metrics_day():
-    writer(0, 'day')
-    writer(2, 'day')
-    writer(3, 'day')
+    work(0, 'day')
 
 
 if __name__ == '__main__':
