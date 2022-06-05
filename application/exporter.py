@@ -4,7 +4,7 @@ from date_work import DataWork
 import time
 
 
-def exporter(group: int, tps: str):
+def exporter(group: str, tps: str):
     db = Database()
     dt = DataWork().set_date()
     users = db.get_users(group)

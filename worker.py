@@ -4,7 +4,7 @@ from application.changer import Changer
 from date_work import DataWork
 
 
-def work(group: int, tps: str):
+def work(group: str, tps: str):
     db = Database()
     users = db.get_users(group)
     dt = DataWork().set_date()
@@ -15,8 +15,8 @@ def work(group: int, tps: str):
         change = Changer(cls_df)
         revenue, revenue_rest = change.change_revenue()
         productivity, product, orders_per_hour = change.change_productivity()
-        prepare = change.change_prepare()
-        scrap = change.change_scrap()
+        prepare, proc_prepare = change.change_prepare(revenue)
+        scrap, proc_scrap = change.change_scrap(revenue)
         stop_selling, cause_of_stops = change.change_being_stop()
         delivery_time, certificates = change.change_delivery_statistic()
         time_in_delivery, time_in_shelf = change.change_handover_delivery()
@@ -24,9 +24,8 @@ def work(group: int, tps: str):
         if len(line) == 0:
             db.add_metrics(dt, user[1], user[0], revenue, revenue_rest, productivity, orders_per_hour, product,
                            time_in_rest, time_in_delivery, time_in_shelf, delivery_time, stop_selling, cause_of_stops,
-                           certificates, prepare, scrap)
+                           certificates, prepare, proc_prepare, scrap, proc_scrap)
         else:
             db.update_metrics(dt, user[1], user[0], revenue, revenue_rest, productivity, orders_per_hour, product,
                               time_in_rest, time_in_delivery, time_in_shelf, delivery_time, stop_selling,
-                              cause_of_stops, certificates, prepare, scrap)
-
+                              cause_of_stops, certificates, prepare, proc_prepare, scrap, proc_scrap)

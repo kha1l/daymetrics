@@ -94,21 +94,29 @@ class Changer:
 
         return int(productivity), float(product_on_hour), float(order_per_hour)
 
-    def change_prepare(self):
+    def change_prepare(self, revenue):
         df = self.obj.df_prepare
         try:
             prepare = float(round(df['Стоимость'].sum() + df['Сумма'].sum(), 2))
         except KeyError:
             prepare = 0
-        return prepare
+        try:
+            proc_prepare = float(round(prepare / revenue, 3))
+        except ZeroDivisionError:
+            proc_prepare = 0
+        return prepare, proc_prepare
 
-    def change_scrap(self):
+    def change_scrap(self, revenue):
         df = self.obj.df_scrap
         try:
             scrap = float(round(df['Стоимость'].sum() + df['Сумма'].sum(), 2))
         except KeyError:
             scrap = 0
-        return scrap
+        try:
+            proc_scrap = float(round(scrap / revenue, 3))
+        except ZeroDivisionError:
+            proc_scrap = 0
+        return scrap, proc_scrap
 
     def change_being_stop(self):
         df = self.obj.df_stop

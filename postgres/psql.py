@@ -32,52 +32,54 @@ class Database:
         return data
 
     def get_data(self, name: str):
-        sql = 'SELECT rest_id, long_id, login, password FROM settingsrest WHERE name_rest=%s;'
+        sql = 'SELECT restId, uuId, restLogin, restPassword, countryCode FROM settings WHERE restName=%s;'
         parameters = (name,)
         return self.execute(sql, parameters=parameters, fetchone=True)
 
-    def get_users(self, group: int):
-        sql = 'SELECT name_rest, rest_id FROM settingsrest WHERE group_index=%s order by rest_id;'
+    def get_users(self, group: str):
+        sql = 'SELECT restName, restId FROM settings WHERE restGroup=%s order by restId;'
         parameters = (group,)
         return self.execute(sql, parameters=parameters, fetchall=True)
 
     def get_line(self, dt: str, rest_id: int):
-        sql = 'SELECT date, rest_id FROM daymetrics WHERE date=%s and rest_id=%s'
-        parameters = dt, rest_id
+        sql = 'SELECT ordersDay, restId FROM day WHERE ordersDay=%s and restId=%s'
+        parameters = (dt, rest_id)
         return self.execute(sql, parameters=parameters, fetchall=True)
 
     def add_metrics(self, dt: date, rest_id: int, name_rest: str, revenue: int, revenue_rest: int,
                     productivity: int, orders_per_hour: float, product: float, time_in_rest: timedelta,
                     time_in_delivery: timedelta, time_in_shelf: timedelta, delivery_time: timedelta,
-                    stop_selling: timedelta, cause_of_stops: str, certificates: int, prepare: float, scrap: float):
+                    stop_selling: timedelta, cause_of_stops: str, certificates: int, prepare: float,
+                    proc_prepare: float, scrap: float, proc_scrap: float):
         sql = '''
-            INSERT INTO daymetrics (
-                date, rest_id, name_rest, revenue,
-                revenue_rest, productivity, orders_per_hour,
-                product, time_in_rest, time_in_delivery,
-                time_in_shelf, delivery_time, stop_selling, cause_of_stops,
-                certificates, prepare, scrap) VALUES (
-                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
-                )
+            INSERT INTO day (
+                ordersDay, restId, restName, revenue,
+                revenueRest, productivity, ordersHour,
+                productHour, timeRest, timeDelivery,
+                timeShelf, speedDelivery, stopSelling, stopCause,
+                certificates, prepares, preparesPercent, scraps, scrapsPercent) VALUES (
+                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
             )
         '''
         parameters = (dt, rest_id, name_rest, revenue, revenue_rest, productivity, orders_per_hour, product,
                       time_in_rest, time_in_delivery, time_in_shelf, delivery_time, stop_selling, cause_of_stops,
-                      certificates, prepare, scrap)
+                      certificates, prepare, proc_prepare, scrap, proc_scrap)
         self.execute(sql, parameters=parameters, commit=True)
 
     def update_metrics(self, dt: date, rest_id: int, name_rest: str, revenue: int, revenue_rest: int,
                        productivity: int, orders_per_hour: float, product: float, time_in_rest: timedelta,
                        time_in_delivery: timedelta, time_in_shelf: timedelta, delivery_time: timedelta,
-                       stop_selling: timedelta, cause_of_stops: str, certificates: int, prepare: float, scrap: float):
+                       stop_selling: timedelta, cause_of_stops: str, certificates: int, prepare: float,
+                       proc_prepare: float, scrap: float, proc_scrap: float):
         sql = '''
-            UPDATE daymetrics SET date=%s, rest_id=%s, name_rest=%s, revenue=%s,
-                revenue_rest=%s, productivity=%s, orders_per_hour=%s,
-                product=%s, time_in_rest=%s, time_in_delivery=%s,
-                time_in_shelf=%s, delivery_time=%s, stop_selling=%s, cause_of_stops=%s,
-                certificates=%s, prepare=%s, scrap=%s WHERE date=%s AND rest_id=%s
+            UPDATE day SET ordersDay=%s, restId=%s, restName=%s, revenue=%s,
+                revenueRest=%s, productivity=%s, ordersHour=%s,
+                productHour=%s, timeRest=%s, timeDelivery=%s,
+                timeShelf=%s, speedDelivery=%s, stopSelling=%s, stopCause=%s,
+                certificates=%s, prepares=%s, preparesPercent=%s, scraps=%s, scrapsPercent=%s 
+                WHERE date=%s AND rest_id=%s
         '''
         parameters = (dt, rest_id, name_rest, revenue, revenue_rest, productivity, orders_per_hour, product,
                       time_in_rest, time_in_delivery, time_in_shelf, delivery_time, stop_selling, cause_of_stops,
-                      certificates, prepare, scrap, dt, rest_id)
+                      certificates, prepare, proc_prepare, scrap, proc_scrap, dt, rest_id)
         self.execute(sql, parameters=parameters, commit=True)

@@ -15,6 +15,7 @@ class DataExportDay:
         self.date_end = date_end
         self.login = data[2]
         self.password = data[3]
+        self.code = data[4]
         self.session = None
         self.user = None
         self.header = None
@@ -25,14 +26,14 @@ class DataExportDay:
         self.session = requests.Session()
         self.user = fake_useragent.UserAgent().random
         log_data = {
-            'CountryCode': 'Ru',
+            'CountryCode': self.code,
             'login': self.login,
             'password': self.password
         }
         self.header = {
             'user-agent': self.user
         }
-        log_link = 'https://auth.dodopizza.ru/Authenticate/LogOn'
+        log_link = f'https://auth.dodopizza.{self.code}/Authenticate/LogOn'
         self.session.post(log_link, data=log_data, headers=self.header)
 
     def save(self, orders_data):
@@ -51,7 +52,7 @@ class DataExportDay:
         }
         orders_data = {
             'productivity': {
-                'link': 'https://officemanager.dodopizza.ru/Reports/Productivity/Export',
+                'link': f'https://officemanager.dodopizza.{self.code}/Reports/Productivity/Export',
                 'data': {
                     "unitId": self.rest,
                     "beginDate": self.date_end - timedelta(days=delta_days[tps]),
@@ -70,7 +71,7 @@ class DataExportDay:
         }
         orders_data = {
             'revenue': {
-                'link': 'https://officemanager.dodopizza.ru/Reports/Revenue/Export',
+                'link': f'https://officemanager.dodopizza.{self.code}/Reports/Revenue/Export',
                 'data': {
                     "unitsIds": self.rest,
                     "OrderSources": [
@@ -110,7 +111,7 @@ class DataExportDay:
         }
         orders_data = {
             'del_statistic': {
-                'link': 'https://officemanager.dodopizza.ru/Reports/DeliveryStatistic/Export',
+                'link': f'https://officemanager.dodopizza.{self.code}/Reports/DeliveryStatistic/Export',
                 'data': {
                     "unitsIds": self.rest,
                     "beginDate": self.date_end - timedelta(days=delta_days[tps]),
@@ -128,7 +129,7 @@ class DataExportDay:
         }
         orders_data = {
             'being_stop': {
-                'link': 'https://officemanager.dodopizza.ru/Reports/StopSaleStatistic/Export',
+                'link': f'https://officemanager.dodopizza.{self.code}/Reports/StopSaleStatistic/Export',
                 'data': {
                     "UnitsIds": self.rest,
                     "stopType": "0",
@@ -147,7 +148,7 @@ class DataExportDay:
         }
         orders_data = {
             'handover-delivery': {
-                'link': 'https://officemanager.dodopizza.ru/Reports/OrderHandoverTime/Export',
+                'link': f'https://officemanager.dodopizza.{self.code}/Reports/OrderHandoverTime/Export',
                 'data': {
                     "unitsIds": self.uuid,
                     "beginDate": self.date_end - timedelta(days=delta_days[tps]),
@@ -167,7 +168,7 @@ class DataExportDay:
         }
         orders_data = {
             'handover_stationary': {
-                'link': 'https://officemanager.dodopizza.ru/Reports/OrderHandoverTime/Export',
+                'link': f'https://officemanager.dodopizza.{self.code}/Reports/OrderHandoverTime/Export',
                 'data': {
                     "unitsIds": self.uuid,
                     "beginDate": self.date_end - timedelta(days=delta_days[tps]),
@@ -187,7 +188,7 @@ class DataExportDay:
         }
         orders_data = {
             'prepare': {
-                'link': 'https://officemanager.dodopizza.ru/OfficeManager/Debiting/BuildExcelReport',
+                'link': f'https://officemanager.dodopizza.{self.code}/OfficeManager/Debiting/BuildExcelReport',
                 'data': {
                     "DebitingReasonId": [
                         "100",
@@ -211,7 +212,7 @@ class DataExportDay:
         }
         orders_data = {
             'scrap': {
-                'link': 'https://officemanager.dodopizza.ru/OfficeManager/Debiting/BuildExcelReport',
+                'link': f'https://officemanager.dodopizza.{self.code}/OfficeManager/Debiting/BuildExcelReport',
                 'data': {
                     "DebitingReasonId": [
                         "200",
