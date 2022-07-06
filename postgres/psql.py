@@ -50,36 +50,46 @@ class Database:
                     productivity: int, orders_per_hour: float, product: float, time_in_rest: timedelta,
                     time_in_delivery: timedelta, time_in_shelf: timedelta, delivery_time: timedelta,
                     stop_selling: timedelta, cause_of_stops: str, certificates: int, prepare: float,
-                    proc_prepare: float, scrap: float, proc_scrap: float):
+                    proc_prepare: float, prepare_case: float, scrap: float, proc_scrap: float, sp_kitchen: float,
+                    revenue_del: int, revenue_pick: int, check_del: float, check_rest: float):
         sql = '''
             INSERT INTO day (
                 ordersDay, restId, restName, revenue,
                 revenueRest, productivity, ordersHour,
                 productHour, timeRest, timeDelivery,
                 timeShelf, speedDelivery, stopSelling, stopCause,
-                certificates, prepares, preparesPercent, scraps, scrapsPercent) VALUES (
-                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                certificates, prepares, preparesPercent, prepareShowcase, 
+                scraps, scrapsPercent, speedKitchen, revenueDelivery, revenuePickup, 
+                checkDelivery, checkrest) 
+                VALUES (
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
+                    %s, %s, %s, %s, %s, %s, %s
             )
         '''
         parameters = (dt, rest_id, name_rest, revenue, revenue_rest, productivity, orders_per_hour, product,
                       time_in_rest, time_in_delivery, time_in_shelf, delivery_time, stop_selling, cause_of_stops,
-                      certificates, prepare, proc_prepare, scrap, proc_scrap)
+                      certificates, prepare, proc_prepare, prepare_case, scrap, proc_scrap, sp_kitchen,
+                      revenue_del, revenue_pick, check_del, check_rest)
         self.execute(sql, parameters=parameters, commit=True)
 
     def update_metrics(self, dt: date, rest_id: int, name_rest: str, revenue: int, revenue_rest: int,
                        productivity: int, orders_per_hour: float, product: float, time_in_rest: timedelta,
                        time_in_delivery: timedelta, time_in_shelf: timedelta, delivery_time: timedelta,
                        stop_selling: timedelta, cause_of_stops: str, certificates: int, prepare: float,
-                       proc_prepare: float, scrap: float, proc_scrap: float):
+                       proc_prepare: float, prepare_case: float, scrap: float, proc_scrap: float, sp_kitchen: float,
+                       revenue_del: int, revenue_pick: int, check_del: float, check_rest: float):
         sql = '''
             UPDATE day SET ordersDay=%s, restId=%s, restName=%s, revenue=%s,
                 revenueRest=%s, productivity=%s, ordersHour=%s,
                 productHour=%s, timeRest=%s, timeDelivery=%s,
                 timeShelf=%s, speedDelivery=%s, stopSelling=%s, stopCause=%s,
-                certificates=%s, prepares=%s, preparesPercent=%s, scraps=%s, scrapsPercent=%s 
-                WHERE date=%s AND rest_id=%s
+                certificates=%s, prepares=%s, preparesPercent=%s, 
+                prepareShowcase=%s, scraps=%s, scrapsPercent=%s, speedKitchen=%s,
+                revenueDelivery=%s, revenuePickup=%s , checkDelivery=%s, checkRest=%s
+                WHERE ordersDay=%s AND restId=%s
         '''
         parameters = (dt, rest_id, name_rest, revenue, revenue_rest, productivity, orders_per_hour, product,
                       time_in_rest, time_in_delivery, time_in_shelf, delivery_time, stop_selling, cause_of_stops,
-                      certificates, prepare, proc_prepare, scrap, proc_scrap, dt, rest_id)
+                      certificates, prepare, proc_prepare, prepare_case, scrap, proc_scrap, sp_kitchen,
+                      revenue_del, revenue_pick, check_del, check_rest, dt, rest_id)
         self.execute(sql, parameters=parameters, commit=True)

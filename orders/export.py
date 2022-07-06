@@ -6,7 +6,7 @@ from postgres.psql import Database
 
 class DataExportDay:
 
-    def __init__(self, date_end: date, name: str):
+    def __init__(self, date_end: date, name: str, tps: str):
         db = Database()
         data = db.get_data(name)
         self.name = name
@@ -19,7 +19,7 @@ class DataExportDay:
         self.session = None
         self.user = None
         self.header = None
-        self.tps = None
+        self.tps = tps
         self.auth()
 
     def auth(self):
@@ -44,8 +44,7 @@ class DataExportDay:
                 file.write(response.content)
                 file.close()
 
-    def productivity(self, tps: str):
-        self.tps = tps
+    def productivity(self):
         delta_days = {
             'day': 0,
             'week': 6,
@@ -55,7 +54,7 @@ class DataExportDay:
                 'link': f'https://officemanager.dodopizza.{self.code}/Reports/Productivity/Export',
                 'data': {
                     "unitId": self.rest,
-                    "beginDate": self.date_end - timedelta(days=delta_days[tps]),
+                    "beginDate": self.date_end - timedelta(days=delta_days[self.tps]),
                     "endDate": self.date_end,
                     "Interval": "24"
                 }
@@ -63,8 +62,7 @@ class DataExportDay:
         }
         self.save(orders_data)
 
-    def revenue(self, tps: str):
-        self.tps = tps
+    def revenue(self):
         delta_days = {
             'day': 0,
             'week': 6,
@@ -85,10 +83,10 @@ class DataExportDay:
                     "ReportType": "ByDates",
                     "reportType": "",
                     "pseudoBeginTime": "",
-                    "pseudoBeginDate": self.date_end - timedelta(days=delta_days[tps]),
+                    "pseudoBeginDate": self.date_end - timedelta(days=delta_days[self.tps]),
                     "pseudoEndTime": "",
                     "pseudoEndDate": self.date_end,
-                    "beginDate": self.date_end - timedelta(days=delta_days[tps]),
+                    "beginDate": self.date_end - timedelta(days=delta_days[self.tps]),
                     "endDate": self.date_end,
                     "beginTime": "",
                     "endTime": "",
@@ -103,8 +101,7 @@ class DataExportDay:
         }
         self.save(orders_data)
 
-    def delivery_statistic(self, tps: str):
-        self.tps = tps
+    def delivery_statistic(self):
         delta_days = {
             'day': 0,
             'week': 6,
@@ -114,15 +111,14 @@ class DataExportDay:
                 'link': f'https://officemanager.dodopizza.{self.code}/Reports/DeliveryStatistic/Export',
                 'data': {
                     "unitsIds": self.rest,
-                    "beginDate": self.date_end - timedelta(days=delta_days[tps]),
+                    "beginDate": self.date_end - timedelta(days=delta_days[self.tps]),
                     "endDate": self.date_end
                 }
             }
         }
         self.save(orders_data)
 
-    def being_stop(self, tps: str):
-        self.tps = tps
+    def being_stop(self):
         delta_days = {
             'day': 0,
             'week': 6,
@@ -133,15 +129,14 @@ class DataExportDay:
                 'data': {
                     "UnitsIds": self.rest,
                     "stopType": "0",
-                    "beginDate": self.date_end - timedelta(days=delta_days[tps]),
+                    "beginDate": self.date_end - timedelta(days=delta_days[self.tps]),
                     "endDate": self.date_end
                 }
             }
         }
         self.save(orders_data)
 
-    def handover_delivery(self, tps: str):
-        self.tps = tps
+    def handover_delivery(self):
         delta_days = {
             'day': 0,
             'week': 6,
@@ -151,7 +146,7 @@ class DataExportDay:
                 'link': f'https://officemanager.dodopizza.{self.code}/Reports/OrderHandoverTime/Export',
                 'data': {
                     "unitsIds": self.uuid,
-                    "beginDate": self.date_end - timedelta(days=delta_days[tps]),
+                    "beginDate": self.date_end - timedelta(days=delta_days[self.tps]),
                     "endDate": self.date_end,
                     "orderTypes": "Delivery",
                     "Export": "Экспорт+в+Excel"
@@ -160,8 +155,7 @@ class DataExportDay:
         }
         self.save(orders_data)
 
-    def handover_stationary(self, tps: str):
-        self.tps = tps
+    def handover_stationary(self):
         delta_days = {
             'day': 0,
             'week': 6,
@@ -171,7 +165,7 @@ class DataExportDay:
                 'link': f'https://officemanager.dodopizza.{self.code}/Reports/OrderHandoverTime/Export',
                 'data': {
                     "unitsIds": self.uuid,
-                    "beginDate": self.date_end - timedelta(days=delta_days[tps]),
+                    "beginDate": self.date_end - timedelta(days=delta_days[self.tps]),
                     "endDate": self.date_end,
                     "orderTypes": "Stationary",
                     "Export": "Экспорт+в+Excel"
@@ -180,8 +174,7 @@ class DataExportDay:
         }
         self.save(orders_data)
 
-    def prepare(self, tps: str):
-        self.tps = tps
+    def prepare(self):
         delta_days = {
             'day': 0,
             'week': 6,
@@ -196,16 +189,36 @@ class DataExportDay:
                         "600"
                     ],
                     "UnitId": self.rest,
-                    "StartDate": self.date_end - timedelta(days=delta_days[tps]),
+                    "StartDate": self.date_end - timedelta(days=delta_days[self.tps]),
                     "EndDate": self.date_end,
-                    "Mode": "ByDay",
+                    "Mode": "ByReason",
                 }
             }
         }
         self.save(orders_data)
 
-    def scrap(self, tps: str):
-        self.tps = tps
+    def prepare_case(self):
+        delta_days = {
+            'day': 0,
+            'week': 6,
+        }
+        orders_data = {
+            'prepare_case': {
+                'link': f'https://officemanager.dodopizza.{self.code}/OfficeManager/Debiting/BuildExcelReport',
+                'data': {
+                    "DebitingReasonId": [
+                        "600"
+                    ],
+                    "UnitId": self.rest,
+                    "StartDate": self.date_end - timedelta(days=delta_days[self.tps]),
+                    "EndDate": self.date_end,
+                    "Mode": "ByReason",
+                }
+            }
+        }
+        self.save(orders_data)
+
+    def scrap(self):
         delta_days = {
             'day': 0,
             'week': 6,
@@ -221,10 +234,40 @@ class DataExportDay:
                         "700"
                     ],
                     "UnitId": self.rest,
-                    "StartDate": self.date_end - timedelta(days=delta_days[tps]),
+                    "StartDate": self.date_end - timedelta(days=delta_days[self.tps]),
                     "EndDate": self.date_end,
-                    "Mode": "ByDay",
+                    "Mode": "ByReason",
                 }
             }
         }
         self.save(orders_data)
+
+    def average_check(self):
+        delta_days = {
+            'day': 0,
+            'week': 6,
+        }
+        orders_data = {
+            'average_check': {
+                'link': f'https://officemanager.dodopizza.{self.code}/Reports/AverageCheck/Export',
+                'data': {
+                    "unitsIds": self.rest,
+                    "orderSources": [
+                        "Telephone",
+                        "Site",
+                        "Restaurant",
+                        "Mobile",
+                        "Pizzeria",
+                        "Aggregator"
+                    ],
+                    "beginDate": self.date_end - timedelta(days=delta_days[self.tps]),
+                    "endDate": self.date_end,
+                    "orderTypes": [
+                        "Delivery",
+                        "Stationary"
+                    ]
+                }
+            }
+        }
+        self.save(orders_data)
+

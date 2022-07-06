@@ -11,7 +11,14 @@ class ReadFile:
         try:
             df = pd.read_excel(f'./orders/export/{order}_{self.name}_{self.tps}.xlsx', skiprows=rows)
         except ValueError:
-            print(f'Неккоректный отчет в {self.name}:{order}')
+            df = pd.DataFrame()
+        return df
+
+    def open_file_prepare(self, order: str, rows: int):
+        try:
+            df = pd.read_excel(f'./orders/export/{order}_{self.name}_{self.tps}.xlsx', sheet_name='Исходные данные',
+                               skiprows=rows)
+        except ValueError:
             df = pd.DataFrame()
         return df
 
@@ -26,6 +33,8 @@ class Reader(ReadFile):
     df_hand_stat = None
     df_prepare = None
     df_scrap = None
+    df_prepareCase = None
+    df_avgCheck = None
 
     def read_df(self):
         self.df_rev = self.open_file('revenue', 17)
@@ -34,6 +43,8 @@ class Reader(ReadFile):
         self.df_stop = self.open_file('being_stop', 5)
         self.df_hand_del = self.open_file('handover-delivery', 6)
         self.df_hand_stat = self.open_file('handover_stationary', 6)
-        self.df_prepare = self.open_file('prepare', 6)
-        self.df_scrap = self.open_file('scrap', 6)
+        self.df_prepare = self.open_file_prepare('prepare', 0)
+        self.df_scrap = self.open_file_prepare('scrap', 0)
+        self.df_prepareCase = self.open_file_prepare('prepare_case', 0)
+        self.df_avgCheck = self.open_file('average_check', 7)
 
