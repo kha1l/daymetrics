@@ -231,3 +231,12 @@ class Changer:
 
         return check_del, check_rest
 
+    def change_rating_client(self, uuid):
+        df = self.obj.df_rating_client
+        df_rat = df.loc[df['UnitUUId'] == uuid].reset_index()
+        try:
+            rating = round(df_rat.iloc[0]['AvgRating'], 2)
+        except IndexError:
+            rating = 0
+        return float(rating)
+

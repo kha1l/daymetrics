@@ -2,7 +2,6 @@ import time
 import schedule
 from application.exporter import exporter
 from worker import work
-from datetime import date, timedelta
 
 
 # Экспорт Вересов
@@ -42,7 +41,7 @@ def get_metrics_day():
 
 
 # Экспорт Корсаков
-@schedule.repeat(schedule.every().day.at('14:03'))
+@schedule.repeat(schedule.every().day.at('00:05'))
 def get_metrics_day():
     exporter('korsakov', 'day')
 
@@ -54,14 +53,9 @@ def get_metrics_day():
 
 
 # Экспорт Зеленогорск
-@schedule.repeat(schedule.every().day.at('10:49'))
+@schedule.repeat(schedule.every().day.at('05:30'))
 def get_metrics_day():
-    dt = date(2022, 7, 5)
-    while dt != date(2022, 7, 6):
-        exporter('zelen', 'day', dt)
-        work('zelen', 'day', dt)
-        print(dt)
-        dt += timedelta(days=1)
+    exporter('zelen', 'day')
 
 
 # Запись в базу данных Вересов
@@ -95,13 +89,13 @@ def get_metrics_day():
 
 
 # Запись в базу данных Петергоф
-@schedule.repeat(schedule.every().day.at('02:20'))
+@schedule.repeat(schedule.every().day.at('12:23'))
 def get_metrics_day():
     work('vkus', 'day')
 
 
 # Запись в базу данных Корсаков
-@schedule.repeat(schedule.every().day.at('14:08'))
+@schedule.repeat(schedule.every().day.at('02:20'))
 def get_metrics_day():
     work('korsakov', 'day')
 
@@ -113,7 +107,7 @@ def get_metrics_day():
 
 
 # Запись в базу данных Зеленогорск
-@schedule.repeat(schedule.every().day.at('01:10'))
+@schedule.repeat(schedule.every().day.at('05:35'))
 def get_metrics_day():
     work('zelen', 'day')
 

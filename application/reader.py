@@ -35,6 +35,7 @@ class Reader(ReadFile):
     df_scrap = None
     df_prepareCase = None
     df_avgCheck = None
+    df_rating_client = None
 
     def read_df(self):
         self.df_rev = self.open_file('revenue', 17)
@@ -47,4 +48,4 @@ class Reader(ReadFile):
         self.df_scrap = self.open_file_prepare('scrap', 0)
         self.df_prepareCase = self.open_file_prepare('prepare_case', 0)
         self.df_avgCheck = self.open_file('average_check', 7)
-
+        self.df_rating_client = pd.read_json('https://publicapi.dodois.io/ru/api/v1/ratings')

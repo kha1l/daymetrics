@@ -4,10 +4,10 @@ from application.changer import Changer
 from date_work import DataWork
 
 
-def work(group: str, tps: str, dt):
+def work(group: str, tps: str):
     db = Database()
     users = db.get_users(group)
-    # dt = DataWork().set_date()
+    dt = DataWork().set_date()
     for user in users:
         line = db.get_line(dt, user[1])
         cls_df = Reader(user[0], tps)
@@ -23,13 +23,14 @@ def work(group: str, tps: str, dt):
         time_in_delivery, time_in_shelf = change.change_handover_delivery()
         time_in_rest = change.change_handover_stationary()
         check_del, check_rest = change.change_check()
+        rating_client = change.change_rating_client(user[2])
         if len(line) == 0:
             db.add_metrics(dt, user[1], user[0], revenue, revenue_rest, productivity, orders_per_hour, product,
                            time_in_rest, time_in_delivery, time_in_shelf, delivery_time, stop_selling, cause_of_stops,
                            certificates, prepare, proc_prepare, prepare_case, scrap, proc_scrap, speed_kitchen,
-                           revenue_del, revenue_pick, check_del, check_rest)
+                           revenue_del, revenue_pick, check_del, check_rest, rating_client)
         else:
             db.update_metrics(dt, user[1], user[0], revenue, revenue_rest, productivity, orders_per_hour, product,
                               time_in_rest, time_in_delivery, time_in_shelf, delivery_time, stop_selling,
                               cause_of_stops, certificates, prepare, proc_prepare, prepare_case, scrap, proc_scrap,
-                              speed_kitchen, revenue_del, revenue_pick, check_del, check_rest)
+                              speed_kitchen, revenue_del, revenue_pick, check_del, check_rest, rating_client)

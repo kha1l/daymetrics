@@ -37,7 +37,7 @@ class Database:
         return self.execute(sql, parameters=parameters, fetchone=True)
 
     def get_users(self, group: str):
-        sql = 'SELECT restName, restId FROM settings WHERE restGroup=%s order by restId;'
+        sql = 'SELECT restName, restId, uuId FROM settings WHERE restGroup=%s order by restId;'
         parameters = (group,)
         return self.execute(sql, parameters=parameters, fetchall=True)
 
@@ -51,7 +51,7 @@ class Database:
                     time_in_delivery: timedelta, time_in_shelf: timedelta, delivery_time: timedelta,
                     stop_selling: timedelta, cause_of_stops: str, certificates: int, prepare: float,
                     proc_prepare: float, prepare_case: float, scrap: float, proc_scrap: float, sp_kitchen: float,
-                    revenue_del: int, revenue_pick: int, check_del: float, check_rest: float):
+                    revenue_del: int, revenue_pick: int, check_del: float, check_rest: float, rt: int):
         sql = '''
             INSERT INTO day (
                 ordersDay, restId, restName, revenue,
@@ -60,16 +60,16 @@ class Database:
                 timeShelf, speedDelivery, stopSelling, stopCause,
                 certificates, prepares, preparesPercent, prepareShowcase, 
                 scraps, scrapsPercent, speedKitchen, revenueDelivery, revenuePickup, 
-                checkDelivery, checkrest) 
+                checkDelivery, checkrest, ratingClients) 
                 VALUES (
                     %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
-                    %s, %s, %s, %s, %s, %s, %s
+                    %s, %s, %s, %s, %s, %s, %s, %s
             )
         '''
         parameters = (dt, rest_id, name_rest, revenue, revenue_rest, productivity, orders_per_hour, product,
                       time_in_rest, time_in_delivery, time_in_shelf, delivery_time, stop_selling, cause_of_stops,
                       certificates, prepare, proc_prepare, prepare_case, scrap, proc_scrap, sp_kitchen,
-                      revenue_del, revenue_pick, check_del, check_rest)
+                      revenue_del, revenue_pick, check_del, check_rest, rt)
         self.execute(sql, parameters=parameters, commit=True)
 
     def update_metrics(self, dt: date, rest_id: int, name_rest: str, revenue: int, revenue_rest: int,
@@ -77,7 +77,7 @@ class Database:
                        time_in_delivery: timedelta, time_in_shelf: timedelta, delivery_time: timedelta,
                        stop_selling: timedelta, cause_of_stops: str, certificates: int, prepare: float,
                        proc_prepare: float, prepare_case: float, scrap: float, proc_scrap: float, sp_kitchen: float,
-                       revenue_del: int, revenue_pick: int, check_del: float, check_rest: float):
+                       revenue_del: int, revenue_pick: int, check_del: float, check_rest: float, rt: int):
         sql = '''
             UPDATE day SET ordersDay=%s, restId=%s, restName=%s, revenue=%s,
                 revenueRest=%s, productivity=%s, ordersHour=%s,
@@ -85,11 +85,12 @@ class Database:
                 timeShelf=%s, speedDelivery=%s, stopSelling=%s, stopCause=%s,
                 certificates=%s, prepares=%s, preparesPercent=%s, 
                 prepareShowcase=%s, scraps=%s, scrapsPercent=%s, speedKitchen=%s,
-                revenueDelivery=%s, revenuePickup=%s , checkDelivery=%s, checkRest=%s
+                revenueDelivery=%s, revenuePickup=%s , checkDelivery=%s, checkRest=%s,
+                ratingClients=%s
                 WHERE ordersDay=%s AND restId=%s
         '''
         parameters = (dt, rest_id, name_rest, revenue, revenue_rest, productivity, orders_per_hour, product,
                       time_in_rest, time_in_delivery, time_in_shelf, delivery_time, stop_selling, cause_of_stops,
                       certificates, prepare, proc_prepare, prepare_case, scrap, proc_scrap, sp_kitchen,
-                      revenue_del, revenue_pick, check_del, check_rest, dt, rest_id)
+                      revenue_del, revenue_pick, check_del, check_rest, rt, dt, rest_id)
         self.execute(sql, parameters=parameters, commit=True)
